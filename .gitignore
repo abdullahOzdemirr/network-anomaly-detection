@@ -21,3 +21,12 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Test ve Simülasyon Scriptleri
+hulk.py
+test.py
+temiz.py
+
+# Log ve Trafik Çıktıları
+traffic_logs.csv
+*.log

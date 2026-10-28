@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# 🛡️ Ağ Trafiği Anomali Tespit ve IDS Sistemi (Real-Time Network Intrusion Detection System)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Bu proje; **CICIDS2017** veri seti kullanılarak geliştirilmiş, gerçek zamanlı ağ trafiğini dinleyen ve çift kademeli yapay zeka mimarisiyle siber saldırıları tespit eden hibrit bir Ağ Güvenlik ve İzleme (IDS) sistemidir. 
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 👥 Geliştirme Süreci ve Notlar
+* Projenin ilk temelleri bir ekip çalışması olarak **Ramazan VANLIOĞLU** ile atılmış, ardından **Abdullah Özdemir** tarafından mimari geliştirilmiş.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🧠 Yapay Zeka ve Model Mimarisi
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Sistem, yüksek doğruluk ve performans sağlamak için **iki kademeli (hibrit) bir karar mekanizması** üzerine kurulmuştur:
 
-### `npm test`
+1. **1. Kademe (Gatekeeper - Ağ Geçidi / İkili Sınıflandırma):** 
+   - **XGBoost (Booster)** kullanılarak eğitilmiştir.
+   - Gelen ağ akışının normal mi yoksa şüpheli/saldırı mı olduğunu hızlıca (`0` veya `1`) filtreler.
+2. **2. Kademe (Expert Model - Uzman Model / Çoklu Sınıflandırma):** 
+   - Eğer ilk kademede saldırı şüphesi tespit edilirse (`prob > 0.5`), akış **Random Forest** modeline yönlendirilir.
+   - Bu model; saldırının türünü (örn. DoS, Port Scan, Botnet vb.) spesifik olarak sınıflandırır ve güven skorunu hesaplar.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 🛠️ Kullanılan Teknolojiler
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* **Yapay Zeka & Veri İşleme:** Python, Scikit-Learn, XGBoost, Pandas, NumPy, Joblib, Google Colab (Veri ön işleme ve eğitim aşaması)
+* **Ağ Analizi & Simülasyon:** Scapy, Socket
+* **Backend:** Flask, Flask-SocketIO
+* **Frontend (Arayüz):** React, CSS, WebSocket tabanlı canlı veri akışı
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📂 Veri Seti ve Eğitim
+* Projede **CICIDS2017** birleştirilmiş ve temizlenmiş veri seti kullanılmıştır.
+* Ham ağ verileri ön işleme adımlarından geçirilmiş, modelin beklentisine uygun matris formatına getirilerek (`canli_test_seti.csv`) modeller eğitilmiştir.
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## ⚙️ Kurulum ve Çalıştırma
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları takip edebilirsiniz:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 1. Projeyi Klonlayın
+- git clone 
+- cd 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 2. React Frontend (Arayüz) Tarafını Başlatın
+- npm install
+- npm start
 
-## Learn More
+### 3. Python Backend (Sunucu) Tarafını Başlatın
+- python server.py
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Tarayıcınızdan http://localhost:3000 adresine giderek gerçek zamanlı anomali tespit panelini görüntüleyebilirsiniz.
