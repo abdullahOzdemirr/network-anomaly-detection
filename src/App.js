@@ -6,9 +6,6 @@ import './App.css';
 
 const COLORS = ['#EF4444', '#F59E0B', '#3B82F6', '#10B981', '#8B5CF6'];
 
-// ==========================================
-// 1. BİLEŞEN: ANA DASHBOARD (Girişten Sonra)
-// ==========================================
 const MainDashboard = () => {
   const [liveTrafficData, setLiveTrafficData] = useState([]);
   const [attackDistData, setAttackDistData] = useState([]);
@@ -19,7 +16,6 @@ const MainDashboard = () => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // Socket bağlantısı sadece giriş yapıldıktan sonra başlar
     socketRef.current = io('http://localhost:5000');
 
     socketRef.current.on('connect', () => {
@@ -218,9 +214,6 @@ const MainDashboard = () => {
   );
 };
 
-// ==========================================
-// 2. BİLEŞEN: APP (LOGIN VE GEÇİŞ MANTIĞI)
-// ==========================================
 const App = () => {
   // Durum Yönetimi
   const [username, setUsername] = useState('');
@@ -271,13 +264,10 @@ const App = () => {
     }
   };
 
-  // EĞER GİRİŞ YAPILDIYSA -> DASHBOARD'I GÖSTER
   if (isLoggedIn) {
     return <MainDashboard />;
   }
 
-  // EĞER GİRİŞ YAPILMADIYSA -> LOGIN EKRANINI GÖSTER
-  // Not: style={styles...} kısımları className olarak güncellendi (App.css'e uygun hale getirildi)
   return (
     <div className="login-container">
       <div className="login-box">

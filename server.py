@@ -19,32 +19,27 @@ FLOW_TIMEOUT = 5.0
 FLOW_CHECK_INTERVAL = 1.0
 LOG_FILE = "traffic_logs.csv"
 
-# 🎛️ SENİN KESİN VE DOĞRULANMIŞ KLASÖR YOLUN
 LOCAL_SAVE_PATH = r"modeller"
-SIM_DATA_FILE = "canli_test_seti.csv" # Notebook'tan aldığın kusursuz matris dosyası
+SIM_DATA_FILE = "canli_test_seti.csv"
 
 class DummyNetworkGuard:
     def process_flow(self, df): return "NORMAL", "Gatekeeper (Dummy)", 100.0
 
 class NetworkGuardSystem:
     def __init__(self, binary_booster, expert_model, label_encoder, feature_columns):
-        self.gatekeeper = binary_booster # Ham xgb.Booster nesnesi
+        self.gatekeeper = binary_booster 
         self.expert = expert_model
         self.le = label_encoder
         self.features = feature_columns
 
     def process_flow(self, flow_features_df):
         try:
-            # Modelin beklediği sütunları tam eğitim sırasıyla kesiyoruz
             model_input = flow_features_df[self.features]
             
-            # --- 🚀 ÇEKİRDEK TAHMİN MOTORU (XGBOOST BOOSTER) ---
-            # İndeks hatasını önlemek için veriyi doğrudan DMatrix yapısına çeviriyoruz
             dmatrix_input = xgb.DMatrix(model_input)
-            attack_prob = self.gatekeeper.predict(dmatrix_input)[0] # İlk satırın olasılığı
+            attack_prob = self.gatekeeper.predict(dmatrix_input)[0] 
 
             if attack_prob > 0.5:
-                # Kademe 2: Random Forest Çoklu Sınıflandırma
                 attack_code = self.expert.predict(model_input)[0]
                 attack_name = self.le.inverse_transform([attack_code])[0]
                 confidence = float(self.expert.predict_proba(model_input).max() * 100)
@@ -55,9 +50,6 @@ class NetworkGuardSystem:
             print(f"🔄 Model Tahmin Hatası: {e}")
             return "HATA", "System", 0.0
 
-# =====================================================================
-# 🚀 MODEL YÜKLEME ÇEKİRDEĞİ (TYPTERROR HATASINI ÇÖZEN METOT)
-# =====================================================================
 system_instance = None
 feature_list = []
 binary_path = os.path.join(LOCAL_SAVE_PATH, 'xgb_binary_model.json')
@@ -66,14 +58,12 @@ le_path = os.path.join(LOCAL_SAVE_PATH, 'label_encoder.pkl')
 
 if os.path.exists(binary_path) and os.path.exists(expert_path) and os.path.exists(le_path):
     try:
-        # Sklearn sarmalayıcısı yerine doğrudan ana çekirdeği (Booster) ayağa kaldırıyoruz
         loaded_gatekeeper = xgb.Booster()
         loaded_gatekeeper.load_model(binary_path)
         
         loaded_expert = joblib.load(expert_path)
         loaded_le = joblib.load(le_path)
         
-        # Sütun isim sıralamasını doğrudan çekirdek hafızasından çekiyoruz
         feature_list = list(loaded_gatekeeper.feature_names)
         
         system_instance = NetworkGuardSystem(loaded_gatekeeper, loaded_expert, loaded_le, feature_list)
@@ -89,8 +79,6 @@ if not os.path.exists(LOG_FILE):
     with open(LOG_FILE, mode='w', newline='', encoding='utf-8') as f:
         csv.writer(f).writerow(["Timestamp", "Src IP", "Src Port", "Dst IP", "Dst Port", "Protocol", "Label", "Confidence"])
 
-
-# --- 2. GERÇEK ZAMANLI ÖZNİTELİK ÇIKARICI AKIŞ MOTORU (CANLI TRAFİK) ---
 class FlowManager:
     def __init__(self):
         self.active_flows = {}
@@ -224,7 +212,6 @@ class FlowManager:
 
 flow_manager = FlowManager()
 
-# --- 3. AKILLI PAKET YAKALAYICI (CANLI SNIFFING) ---
 def packet_callback(packet):
     if IP in packet:
         try:
@@ -258,15 +245,12 @@ def flow_monitor_loop():
 
 def start_sniffing(): sniff(prn=packet_callback, store=False)
 
-
-# # --- 🎯 KUSURSUZ SİMÜLASYON MOTORU (CSV'DEN MODELİN BEKLEDİĞİ DİLDE OKUR) ---
 # def auto_real_data_simulation_loop():
 #     print("[+] Simülatör Hazırlanıyor...")
 #     while not os.path.exists(SIM_DATA_FILE):
 #         print(f"⚠️ {SIM_DATA_FILE} bekleniyor... Notebook'ta ürettiğin 'canli_test_seti.csv' dosyasını bu klasöre at.")
 #         time.sleep(5.0)
 
-#     # DataFrame'i orijinal dtypes ve sıra doğruluğuyla doğrudan hafızaya alıyoruz
 #     df_sim = pd.read_csv(SIM_DATA_FILE)
 #     if 'Real_Target_Label' in df_sim.columns:
 #         df_sim = df_sim.drop(columns=['Real_Target_Label'])
@@ -277,29 +261,24 @@ def start_sniffing(): sniff(prn=packet_callback, store=False)
 #         try:
 #             time.sleep(10.0) # Tam 10 saniyede bir uyanır
             
-#             # Tam matris yapısıyla rastgele bir satır koparıyoruz
 #             satir_df = df_sim.sample(n=1)
             
-#             # Panelde güzel görünmesi için görsel ağ kimlikleri maskeliyoruz
 #             src_ip = f"172.16.1.{random.randint(10, 254)}"
 #             dst_ip = "192.168.1.108"
 #             src_port = random.randint(1025, 65535)
 #             dst_port = 80
 #             protocol = 6
 
-#             # Gelişmiş koruma sistemimize doğrudan satırı paslıyoruz
 #             label, source, conf = system_instance.process_flow(satir_df)
 
 #             timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 #             print(f"🤖 [KUSURSUZ PANEL SİMÜLASYONU] -> Orijinal Satır Soruldu | Yapay Zeka Teşhisi: {label} (%{conf:.2f}) [{source}]")
 
-#             # CSV Loglama
 #             try:
 #                 with open(LOG_FILE, mode='a', newline='', encoding='utf-8') as f:
 #                     csv.writer(f).writerow([timestamp, src_ip, src_port, dst_ip, dst_port, protocol, label, f"{conf:.2f}"])
 #             except Exception: pass
 
-#             # React Bildirimi
 #             flow_bytes = float(satir_df['Flow Bytes/s'].iloc[0]) if 'Flow Bytes/s' in satir_df.columns else 4500.0
 #             socketio.emit('new_packet', {
 #                 'id': random.randint(10000, 999999), 'time': time.strftime("%H:%M:%S"),
@@ -311,13 +290,10 @@ def start_sniffing(): sniff(prn=packet_callback, store=False)
 
 
 if __name__ == '__main__':
-    # THREAD 1: Canlı Ağ Paket Yakalayıcı (Scapy)
     threading.Thread(target=start_sniffing, daemon=True).start()
 
-    # THREAD 2: Canlı Akış Zaman Aşımı Kontrolcüsü
     threading.Thread(target=flow_monitor_loop, daemon=True).start()
 
-    # THREAD 3: 10 Saniyede Bir Kusursuz CSV Akışı Basan Simülatör Motoru
     #threading.Thread(target=auto_real_data_simulation_loop, daemon=True).start()
 
     print("🚀 IDS Sunucusu (Gerçek Çekirdek + Canlı Mod) http://localhost:5000 portunda aktiftir...")

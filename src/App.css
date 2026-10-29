@@ -1,16 +1,12 @@
 /* src/App.css */
 
-/* =========================================
-   BÖLÜM 1: LOGIN EKRANI STİLLERİ
-   (Giriş yapılmadan önceki açık renkli ekran)
-   ========================================= */
 
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f2f5; /* Login için açık gri */
+  background-color: #f0f2f5; 
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -89,26 +85,19 @@
   cursor: not-allowed;
 }
 
-
-/* =========================================
-   BÖLÜM 2: DASHBOARD (PANEL) STİLLERİ
-   (Giriş yapıldıktan sonraki koyu tema)
-   ========================================= */
-
 /* Genel Ayarlar */
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background-color: #0f172a; /* Koyu Lacivert */
+  background-color: #0f172a; 
   color: #f1f5f9;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow: hidden;
   transition: background-color 0.5s ease;
 }
 
-/* Saldırı Anı Kırmızı Arka Plan */
 .app-container.alert-mode {
   background-color: #450a0a;
 }

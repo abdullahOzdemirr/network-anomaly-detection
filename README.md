@@ -42,8 +42,8 @@ Sistem, yüksek doğruluk ve performans sağlamak için **iki kademeli (hibrit) 
 Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları takip edebilirsiniz:
 
 ### 1. Projeyi Klonlayın
-- git clone 
-- cd 
+- git clone https://github.com/abdullahOzdemirr/network-anomaly-detection.git
+- cd network-anomaly-detection
 
 ### 2. React Frontend (Arayüz) Tarafını Başlatın
 - npm install
